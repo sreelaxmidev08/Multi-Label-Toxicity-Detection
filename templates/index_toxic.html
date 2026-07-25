@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comment Toxicity Detection</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      color: #333;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      height: 100vh;
+    }
+
+    
+
+
+    /* Container for form and results */
+    .container {
+      position: relative;
+      z-index: 1;
+      margin-top: 50px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .header h1 {
+      font-size: 48px;
+      font-weight: 800;
+      color: #1a1a1a;
+      letter-spacing: 1px;
+    }
+
+    /* Form section styling */
+    .form-container {
+      background-color: rgba(255, 255, 255, 0.9); /* Add some opacity for better readability */
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .form-container h2 {
+      font-size: 29px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+    }
+
+    .form-control {
+      font-size: 19px;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+
+    .form-control:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+      color: white;
+      font-size: 16px;
+      padding: 15px;
+      border-radius: 10px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+
+    .prediction-results {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .prediction-results h3 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #000000;
+      margin-bottom: 20px;
+    }
+
+    .result-card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .result-card h4 {
+      font-size: 25px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .result-card p {
+      font-size: 21px;
+      color: #007bff;
+    }
+
+    .footer {
+      background-color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      margin-top: 50px;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer a {
+      color: #007bff;
+      font-size: 16px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="background"></div> <!-- Background Image Section -->
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Comment Toxicity Detection</h1>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-container">
+      <form action="{{ url_for('predict') }}" method="post">
+        <h2>Enter Your Comment:</h2>
+        <input type="text" name="text" id="text" class="form-control" placeholder="Enter your comment here" required>
+        <button type="submit" class="btn btn-primary">Predict</button>
+      </form>
+    </div>
+
+    <!-- Prediction Results -->
+    <div class="prediction-results">
+      <h3>Prediction Results:</h3>
+
+      <!-- Toxicity Prediction -->
+      <div class="result-card">
+        <h4>Toxicity</h4>
+        <p>{{ pred_tox }}</p>
+        <h6>The toxicity score indicates whether the comment contains harmful or offensive language.</h6>
+      </div>
+
+      <!-- Severity Prediction -->
+      <div class="result-card">
+        <h4>Severity</h4>
+        <p>{{ pred_sev }}</p>
+        <h6>This score reflects the intensity of the harmful content in the comment.</h6>
+      </div>
+
+      <!-- Observations Prediction -->
+      <div class="result-card">
+        <h4>Observations</h4>
+        <p>{{ pred_obs }}</p>
+        <h6>Observations highlight any key factors or patterns found in the comment that may indicate its impact.</h6>
+      </div>
+
+      <!-- Insult Prediction -->
+      <div class="result-card">
+        <h4>Insult</h4>
+        <p>{{ pred_ins }}</p>
+        <h6>This prediction checks if the comment contains insulting language aimed at degrading others.</h6>
+      </div>
+
+      <!-- Threat Prediction -->
+      <div class="result-card">
+        <h4>Threat</h4>
+        <p>{{ pred_thr }}</p>
+        <h6>The threat prediction determines whether the comment contains any language suggesting harm or violence.</h6>
+      </div>
+
+      <!-- Ideology Prediction -->
+      <div class="result-card">
+        <h4>Ideology</h4>
+        <p>{{ pred_ide }}</p>
+        <h6>This analysis evaluates whether the comment reflects any specific ideological stance or bias.</h6>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and Popper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>

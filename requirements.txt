@@ -1,0 +1,5 @@
+#conda create -n 11 python==3.7 -y
+flask==1.1.4
+#skleanr
+#scikit-learn==0.21.3
+scikit-learn==0.21.2

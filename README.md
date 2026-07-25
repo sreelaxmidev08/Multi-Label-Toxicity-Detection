@@ -1,4 +1,4 @@
-# Multi-Label Toxicity Detector
+# Multi-Label Toxicity Detection in Cyber Communities
 
 A Flask-based web application that classifies user-generated comments into six toxicity categories using machine learning models built with Scikit-learn and TF-IDF vectorization.
 
